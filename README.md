@@ -1,18 +1,19 @@
 
-# ChromaCraft - an Image Editing Web Application
+# ANalytix - an Image Processing Web Application
 
-ChromaCraft is an Image Editing Flask Application which applies simple image editing on an image.
+ANalytix is an Image Processing Flask Application which applies simple image processing on an image.
 
 
 ## About
-ChromaCraft is a simple yet effective Image Editing web app built using Flask and OpenCV. This web application empowers users to upload images and unleash their creativity through a range of image processing operations. From cropping and resizing to applying filters, ChromaCraft offers an enjoyable experience for manipulating images.\
+ANalytix is a simple yet effective Image processing web app built using Flask and OpenCV. This web application empowers users to upload images and unleash their creativity through a range of image processing operations. From cropping and resizing to applying filters, ANalytix offers an enjoyable experience for manipulating images.\
 _**Back-end: Python**_ \
 _**Front-end: HTML, CSS, JavaScript**_
 ## Features
-**Upload Image:** ChromaCraft allows users to effortlessly upload images to perform editing that too in various formats, including webp, png, jpg, and jpeg.\
+**Upload Image:** ANalytix allows users to effortlessly upload images to perform editing that too in various formats, including webp, png, jpg, and jpeg.\
 **Crop Image:** With the interactive cropping feature, users can easily select and extract specific regions of the uploaded image.\
 **Resize Image:** Users have the flexibility to resize their images, maintaining the aspect ratio for consistent and balanced proportions.\
 **Filters:** Offers a delightful array of filters to transform images into unique pieces of art. Users can choose from Black & White, Exposure, and Oil Painting filters.
+**Find Face:** Uses haarcascades xml file for finding faces in an image
 ## Frameworks and Libraries Used
 - **Flask**: A lightweight web framework used for building the web applications.
 
@@ -36,7 +37,7 @@ def home():
 
         if file.filename == '':
             flash('No file chosen')
-            return redirect(request.url)
+            return redirect(request.url) # redirects to home page
         
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
@@ -44,12 +45,15 @@ def home():
             session['filename'] = filename
             session['operation'] = operation
         
+        # calling all functions
         if operation == "crp":
-            return redirect(url_for('crop'))
+            return redirect(url_for('crop')) 
         elif operation == "rsz":
             return redirect(url_for('resize'))
         elif operation == "fltr":
             return redirect(url_for('filter'))
+        elif operation == "fce":
+            return redirect(url_for('face'))
         else:
             flash("Invalid operation selected")
             return redirect(request.url)
@@ -77,9 +81,9 @@ def crop():
                 elif event == cv2.EVENT_LBUTTONUP:  # if left mouse button is released
                     flag = False
                     fx, fy = x, y
-                    cv2.rectangle(img, pt1=(ix, iy), pt2=(x, y), thickness=1, color=(0, 0, 0))
-                    cropped = img[iy:fy, ix:fx]
-                    cv2.imwrite(os.path.join("D:/PROGRAMS/IMAGE PROCESSING SITE/static", filename), cropped)
+                    cv2.rectangle(img, pt1=(ix, iy), pt2=(x, y), thickness=1, color=(0, 0, 0)) # draws the rectangle
+                    cropped = img[iy:fy, ix:fx]  # crops the image
+                    cv2.imwrite(os.path.join("static", filename), cropped)
                     cv2.destroyAllWindows()
                     return redirect(url_for('display_cropped_image', filename=filename))
 
@@ -89,6 +93,7 @@ def crop():
             cv2.setWindowProperty("window", cv2.WND_PROP_TOPMOST, 1)
             cv2.waitKey(0)
     return render_template("crop.html", image_filename=filename)
+
 ```
 ### Resize 
 ```python
@@ -105,54 +110,96 @@ def resize():
         # Resize the image
         resized_img = cv2.resize(img, (width, height))
         resized_filename = f"resized_{filename}"
-        cv2.imwrite(os.path.join("D:/PROGRAMS/IMAGE PROCESSING SITE/static", resized_filename), resized_img)
+        cv2.imwrite(os.path.join("static", resized_filename), resized_img)
         return render_template("resize.html", resized_filename=resized_filename)
 
     return render_template("resize.html")
 ```
 ### Filter 
 ```python
-@app.route("/filter", methods=['GET', 'POST'])
+@app.route("/filter", methods=['GET','POST'])
 def filter():
     if request.method == "POST":
         filter_option = request.form.get("filter_option")
         filename = session.get('filename')
-        img = cv2.imread("D:/PROGRAMS/IMAGE PROCESSING SITE/uploads" + "/" + filename)
+        img = cv2.imread("uploads" + "/" + filename)
 
         # Apply the selected filter option
         if filter_option == "black_white":
             img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             img_filtered = cv2.cvtColor(img_gray, cv2.COLOR_GRAY2BGR)
             filtered_filename = f"filtered_{filename}"
-            cv2.imwrite(os.path.join("D:/PROGRAMS/IMAGE PROCESSING SITE/static", filtered_filename), img_filtered)
+            cv2.imwrite(os.path.join("static", filtered_filename), img_filtered)
+
         elif filter_option == "exposure":
-            sepia_kernel = np.array([[0.272, 0.534, 0.131],
-                                     [0.349, 0.686, 0.168],
-                                     [0.393, 0.769, 0.189]])
-            img_filtered = cv2.filter2D(img, -1, sepia_kernel)
+            img_filtered = cv2.Canny(img,50,200) # canny edge detection
             filtered_filename = f"filtered_{filename}"
-            cv2.imwrite(os.path.join("D:/PROGRAMS/IMAGE PROCESSING SITE/static", filtered_filename), img_filtered)
-        elif filter_option == "painting":
-            img_filtered = cv2.xphoto.oilPainting(img, 7, 1)
+            cv2.imwrite(os.path.join("static", filtered_filename), img_filtered)
+
+        elif filter_option == "contours":
+            blurred = cv2.GaussianBlur(img, (3, 3), 0) 
+            edged = cv2.Canny(blurred, 10, 100)
+            contours, _ = cv2.findContours(edged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) # finding contours 
+            img_filtered = img.copy()
+            cv2.drawContours(img_filtered, contours, -1, (0, 255, 0), 2)  # drawing contours on main image
             filtered_filename = f"filtered_{filename}"
-            cv2.imwrite(os.path.join("D:/PROGRAMS/IMAGE PROCESSING SITE/static", filtered_filename), img_filtered)
+            cv2.imwrite(os.path.join("static", filtered_filename), img_filtered)
+
+        elif filter_option == "blur":
+            img_filtered =  cv2.GaussianBlur(img, (15,15), 0) # gaussian blur
+            filtered_filename = f"filtered_{filename}"
+            cv2.imwrite(os.path.join("static", filtered_filename), img_filtered)   
+
         else:
             flash("Invalid filter option selected")
             return render_template("filter.html")
+        
         return render_template("filter.html", filtered_filename=filtered_filename)
 
     return render_template("filter.html")
 ```
+
+## Find Face
+```python
+@app.route("/face")
+def face():
+
+    filename = session.get('filename')
+    img = cv2.imread(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    operation = session.get('operation')
+    if img is not None:
+        if operation == "fce":
+
+            gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            # haarcascade file
+            face_classifier = cv2.CascadeClassifier("C:/Users/91820/anaconda3/Lib/site-packages/cv2/data/haarcascade_frontalface_default.xml")
+            # finding face in the image 
+            face = face_classifier.detectMultiScale(gray_image, scaleFactor=1.1, minNeighbors=5, minSize=(35,35))
+
+            for (x, y, w, h) in face:
+                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 4)
+
+            # final_face = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
+            face_filename = f"face_{filename}"
+            cv2.imwrite(os.path.join("static", face_filename), img)
+            return render_template("face.html", face_filename=face_filename)
+
+    return render_template("face.html")
+
+```
 ## Templates
-- ### [index.html](https://github.com/SayanDas74/Image_Processing_site/blob/master/templates/index.html)
+- ### [index.html](https://github.com/Nbn03/Image-Processing-Tool/blob/main/templates/index.html)
 
-- ### [crop.html](https://github.com/SayanDas74/Image_Processing_site/blob/master/templates/crop.html)
+- ### [crop.html](https://github.com/Nbn03/Image-Processing-Tool/blob/main/templates/crop.html)
 
-- ### [resize.html](https://github.com/SayanDas74/Image_Processing_site/blob/master/templates/resize.html)
+- ### [resize.html](https://github.com/Nbn03/Image-Processing-Tool/blob/main/templates/resize.html)
 
-- ### [filter.html](https://github.com/SayanDas74/Image_Processing_site/blob/master/templates/filter.html)
+- ### [filter.html](https://github.com/Nbn03/Image-Processing-Tool/blob/main/templates/filter.html)
+
+- ### [face.html](https://github.com/Nbn03/Image-Processing-Tool/blob/main/templates/face.html)
 ## Note
-1. ChromaCraft is designed for demonstration purposes and may require further optimization for large-scale deployment.
+1.ANalytix is designed for demonstration purposes and may require further optimization for large-scale deployment.
 
 2. Ensure that you provide a valid image in one of the allowed formats for processing.
 
