@@ -60,6 +60,7 @@ def home():
 
     return render_template("index.html")
 ```
+
 ### Crop
 ```python
 @app.route("/crop")
