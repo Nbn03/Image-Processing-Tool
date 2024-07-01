@@ -1,3 +1,4 @@
+![image](https://github.com/Nbn03/Image-Processing-Tool/assets/136473086/7bfb043a-50cc-4d67-9da0-1492c8256cae)
 
 # ANalytix - an Image Processing Web Application
 
