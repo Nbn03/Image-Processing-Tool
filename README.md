@@ -7,8 +7,8 @@ ANalytix is an Image Processing Flask Application which applies simple image pro
 
 ## About
 ANalytix is a simple yet effective Image processing web app built using Flask and OpenCV. This web application empowers users to upload images and unleash their creativity through a range of image processing operations. From cropping and resizing to applying filters, ANalytix offers an enjoyable experience for manipulating images.\
-_**Back-end: Python**_ \
-_**Front-end: HTML, CSS, JavaScript**_
+_**Back-end: Python, Flask**_ \
+_**Front-end: HTML, CSS, JavaScript, Bootstrap**_
 ## Features
 **Upload Image:** ANalytix allows users to effortlessly upload images to perform editing that too in various formats, including webp, png, jpg, and jpeg.\
 **Crop Image:** With the interactive cropping feature, users can easily select and extract specific regions of the uploaded image.\
