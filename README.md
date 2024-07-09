@@ -39,7 +39,7 @@ _**Front-end: HTML, CSS, JavaScript**_
 
 - ### [face.html](https://github.com/Nbn03/Image-Processing-Tool/blob/main/templates/face.html)
 ## Note
-1.ANalytix is designed for demonstration purposes and may require further optimization for large-scale deployment.
+1. ANalytix is designed for demonstration purposes and may require further optimization for large-scale deployment.
 
 2. Ensure that you provide a valid image in one of the allowed formats for processing.
 
