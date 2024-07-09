@@ -10,11 +10,11 @@ ANalytix is a simple yet effective Image processing web app built using Flask an
 _**Back-end: Python, Flask**_ \
 _**Front-end: HTML, CSS, JavaScript, Bootstrap**_
 ## Features
-**Upload Image:** ANalytix allows users to effortlessly upload images to perform editing that too in various formats, including webp, png, jpg, and jpeg.\
-**Crop Image:** With the interactive cropping feature, users can easily select and extract specific regions of the uploaded image.\
-**Resize Image:** Users have the flexibility to resize their images, maintaining the aspect ratio for consistent and balanced proportions.\
-**Filters:** Offers a delightful array of filters to transform images into unique pieces of art. Users can choose from Black & White, Exposure, and Oil Painting filters.
-**Find Face:** Uses haarcascades xml file for finding faces in an image
+- **Upload Image:** ANalytix allows users to effortlessly upload images to perform editing that too in various formats, including webp, png, jpg, and jpeg.\
+- **Crop Image:** With the interactive cropping feature, users can easily select and extract specific regions of the uploaded image.\
+- **Resize Image:** Users have the flexibility to resize their images, maintaining the aspect ratio for consistent and balanced proportions.\
+- **Filters:** Offers a delightful array of filters to transform images into unique pieces of art. Users can choose from Black & White, Exposure, and Oil Painting filters.
+- **Find Face:** Uses haarcascades xml file for finding faces in an image
 ## Frameworks and Libraries Used
 - **Flask**: A lightweight web framework used for building the web applications.
 
